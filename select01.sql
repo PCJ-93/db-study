@@ -51,7 +51,7 @@ DESC emp; --emp 테이블의 구조를 보여달라
 SELECT empno, ename, '그냥문자', 999 FROM emp;
 
 SELECT '그냥문자', 999, q'[요기안에다21435'14246''ㅇㄹㄴㄹ']' FROM emp; --emp테이블에 있는 행만큼 리터럴값이 나온다
--- 문자에는 "~~" 쓰면 오류
+-- 문자에는 "~~" 쓰면 오류 '~~' 사용
 
 SELECT ename AS "이름",
         empno "사번",
@@ -70,7 +70,7 @@ select * from emp;
 select DISTINCT job   --emp테이블 안의 job의 목록중 중복 제거하고 조회
 FROM emp;
 
-select DISTINCT(deptno) --emp테이블 안의 deptno 부서번호 중복제거하고 조회
+select DISTINCT (deptno) --emp테이블 안의 deptno 부서번호 중복제거하고 조회
 from emp;
 
 select DISTINCT deptno, job   -- emp테이블 안의 deptno와job 두개조합이 중복된것을 제거하고 조회( ex)20 ANALYST,20 ANALYST,20 ANALYST )
