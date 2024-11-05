@@ -74,7 +74,7 @@ SELECT  -- student 테이블에서 전공넘버가 201애들중 tel의 ) 표시�
 FROM student
 WHERE deptno1 = 201;
 
--- 간단한 연습 --
+-- 간단한 연습1 --
 SELECT *
 FROM student;
 
@@ -146,7 +146,7 @@ SELECT
     REPLACE(ename, SUBSTR(ename,1 ,2), '**') "REPLACE"
 FROM emp;
 
--- 간단한 연습 --
+-- 간단한 연습2 --
 SELECT *
 FROM emp;
 
@@ -280,7 +280,7 @@ SELECT
     TO_CHAR( ROUND(SYSDATE), 'YYYY-MM-DD HH24:MI:SS')
 FROM dual;
 
--- 간단한 연습 --
+-- 간단한 연습3 --
 SELECT 
     studno,
     name,
@@ -323,6 +323,235 @@ SELECT
 FROM student;
 -- 모닝퀴즈 끝 --
 
+-- 숫자 => 문자 형변환
+SELECT
+    TO_CHAR(1234, '999999'),
+    TO_CHAR(1234, '099999'),
+    TO_CHAR(1234, '$99999'),
+    TO_CHAR(1234, '99999.99'),
+    TO_CHAR(1234, '999,999')
+FROM dual;
+
+SELECT
+    empno,
+    ename,
+    sal,
+    comm,
+    TO_CHAR( (sal*12)+comm, '999,999' ) "연봉"
+FROM emp
+WHERE ename = 'ALLEN';
+
+SELECT
+    empno,
+    ename,
+    TO_CHAR(hiredate, 'YYYY-MM-DD') "HIREDATE",
+    TO_CHAR( (sal*12)+comm, '$999,999' ) "SAL",
+    TO_CHAR( (((sal*12)+comm)*1.15), '$999,999' ) "15%인상"
+  --  TO_CHAR( (((sal*12)+comm) + ((sal*12)+comm)*0.15) , '$999,999' ) "15%인상"
+FROM emp
+WHERE comm IS NOT NULL
+ORDER BY sal;
+
+
+-- TO_DATE  문자 => 날짜 형변환
+SELECT
+    TO_DATE('2024-06-02') + 3,
+    TO_DATE('2024/06/02') + 3,
+    TO_DATE('240602') + 3,
+    TO_DATE('20240602') + 3,
+    LAST_DAY('19991231'),
+    TO_DATE('24:06:02') + 3,
+    TO_CHAR(SYSDATE, 'YYYY/MM/DD'),
+    TO_DATE('2024-01-05', 'YYYY-MM-DD'),
+    TO_DATE('2024,01,05', 'YYYY,MM,DD'),
+    TO_DATE('12/21/20', 'MM/DD/YY')
+FROM dual;
+
+-- NVL null을 원하는값으로 변환
+SELECT
+    sal,
+    comm,
+    sal*12+comm,
+    sal*12+ NVL(comm, 0) -- 예시)문자형 NVL(직급null, '사원') // 날짜형 NVL(날짜null, '23/12/12')
+FROM emp;
+
+SELECT
+    profno,
+    name,
+    pay,
+    bonus,
+    TO_CHAR ( (pay*12)+NVL(bonus,0), '999,999' ) "TOTAL"
+FROM professor
+WHERE deptno = 201;
+
+-- NVL2  NVL2(col1 , null이아니면col2 , null이면col3)
+
+SELECT
+    NVL(null,10),
+    NVL2(123, '있다', '없다'),
+    NVL2(null, '있다', '널이다')
+FROM dual;
+
+-- 간단한 연습4 --
+SELECT
+    profno,
+    name,
+    pay,
+    bonus,
+    TO_CHAR ( (pay*12)+NVL(bonus,0), '999,999' ) "TOTAL"
+FROM professor
+WHERE deptno = 201;
+    
+SELECT
+    empno,
+    ename,
+    comm,
+    NVL2(comm, 'Exist', 'NULL') "NVL2"
+FROM emp
+WHERE deptno = 30;
+-- 연습 끝 --
+
+SELECT  -- NVL, NVL2 활용
+    pay,
+    bonus,
+    NVL(bonus, 0) "BONUS",
+    pay*12 + bonus "TOTAL",
+    pay*12 + NVL(bonus, 0) "TOTAL1",
+    pay*12 + NVL2(bonus, bonus, 0) "TOTAL2",
+    NVL2(bonus, pay*12+bonus, pay*12) "TOTAL3"
+FROM professor;
+
+
+-- DECODE() 함수  // DECODE(a,b,'1',null) null은 생략가능 /// a가 b일경우 1 출력
+SELECT
+    DECODE('그냥','냥','같네','다르네'),
+    DECODE('그냥','그냥','같네','다르네'),
+    DECODE('그냥','그','같네'),
+    DECODE('그냥','냥','같네',null),
+    DECODE(10, 30, '30이다', 40, '40이다', 50, '50이다', '아니다'), -- 중첩사용가능
+    DECODE(10, 30, '30이다', 40, '40이다', 50, '50이다', 60, '60이다', '아니다'),
+    DECODE(10, 30, '30이다', 40, '40이다', 50, '50이다', 60, '60이다', null),
+    DECODE(10, 30, '30이다', 40, '40이다', 50, '50이다', 60, '60이다')
+FROM dual;
+
+SELECT 
+    deptno,
+    name,
+    DECODE(deptno, 101, '컴퓨터공학', '다른학과'),
+    DECODE(deptno, 101, '컴퓨터공학', 102, '컴공'),
+    DECODE(deptno, 101, '컴퓨터공학'),
+    DECODE(deptno, 101, '컴퓨터공학', null)
+FROM professor;
+
+SELECT
+    deptno,
+    name,
+    DECODE(deptno, 101, '컴퓨터공학과', 102, '멀티미디어학과', 103, '소브트웨어학과', 'ETC') "학과",
+    deptno "학과번호"
+FROM professor;
+
+-- 간단한 연습5 --
+SELECT
+    deptno,
+    name,
+    DECODE(name, 'Audie Murphy', DECODE(deptno,101,'BEST!'), 'NULL') "DECODE"
+FROM professor;
+
+SELECT
+    deptno,
+    name,
+    DECODE( name, 'Audie Murphy', 'BEST!', DECODE(deptno,101,'GOOD!') ) "비고"
+FROM professor;
+
+SELECT
+    deptno,
+    name,
+    DECODE( name, 'Audie Murphy', 'BEST!', DECODE(deptno,101,'GOOD!','N/A') ) "비고"
+FROM professor;
+
+SELECT
+    deptno1,
+    name,
+    jumin,
+    DECODE( SUBSTR(jumin,7,1), 1, '남자', 2, '여자') "성별"
+FROM student
+WHERE deptno1 = 101;
+
+SELECT
+    name,
+    tel,
+    DECODE( SUBSTR(tel, 1, INSTR(tel, ')')-1 ), '02', '서울', '031', '경기', '051', '부산', '052', '울산', '055', '경남') "지역명"
+FROM student
+WHERE deptno1 = 101;
+
+SELECT 
+    tel,
+    INSTR(tel, ')')-1,
+    SUBSTR(tel, 1, INSTR(tel, ')')-1 )
+FROM student;
+-- 연습 끝 --
+
+
+-- CASE 함수
+SELECT
+    CASE '1234' when '1234' then '4321'
+    END
+FROM dual;
+
+-- grade 학년 
+--1 1학년 2 2학년 3 3학년 4 4학년
+--1 저학년 2 저학년 3 고학년 4 고학년
+SELECT   -- || 활용
+    grade,
+    grade || '학년' "학년구분"
+FROM student;
+
+SELECT  -- DECODE 활용
+    grade,
+    DECODE(grade, 1, '저학년', 2, '저학년', 3, '고학년', 4, '고학년') "학년구분"
+FROM student;
+
+SELECT -- CASE 활용
+    grade,
+    CASE grade  -- 방법1
+        WHEN 1 THEN '저학년'
+        WHEN 2 THEN '저학년'
+        WHEN 3 THEN '고학년'
+        WHEN 4 THEN '고학년'
+        END "학년구분",
+        
+    CASE  -- 방법2
+        WHEN grade IN(1,2) THEN '저학년'
+        WHEN grade BETWEEN 3 AND 4 THEN '고학년'
+    END "학년구분"
+FROM student;
+
+-- 간단한 연습6 --
+SELECT
+    name,
+    jumin,
+    birthday,
+    CASE 
+        WHEN TO_CHAR(birthday,'MM') BETWEEN 01 AND 03 THEN '1분기'
+        WHEN SUBSTR(jumin,3 ,2) IN(04,05,06) THEN '2분기'
+        WHEN TO_CHAR(birthday,'MM') BETWEEN 07 AND 09 THEN '3분기'
+        WHEN SUBSTR(jumin,3 ,2) IN(10,11,12) THEN '4분기'
+        END "분기"
+FROM student;
+
+SELECT
+    empno,
+    ename,
+    TO_CHAR(sal,'999,999') "sal",
+    CASE 
+        WHEN sal BETWEEN 1 AND 1000 THEN 'Level 1'
+        WHEN sal BETWEEN 1001 AND 2000 THEN 'Level 2'
+        WHEN sal BETWEEN 2001 AND 3000 THEN 'Level 3'
+        WHEN sal BETWEEN 3001 AND 4000 THEN 'Level 4'
+        WHEN sal > 4000 THEN 'Level 5'
+        END "급여등급"
+FROM emp;
+-- 연습 끝 --
 
 
 
