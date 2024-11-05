@@ -300,6 +300,28 @@ WHERE TO_CHAR(hiredate, 'MM') IN('01', '02', '03');
 
 -- 연습 끝 --
 
+-- 모닝퀴즈 2 --
+SELECT 
+    studno "번호",
+    name "이름",
+    id "아이디"
+FROM student
+WHERE height BETWEEN 160 AND 175
+--WHERE height >= 160 AND height <= 175
+UNION ALL
+SELECT
+    profno,
+    name,
+    id
+FROM professor
+WHERE (deptno IN(101,102,103,201)) AND bonus IS NULL;
+
+SELECT 
+    '이름:'||name "이름",
+    '아이디:'||id "아이디",
+    '주민번호:'||SUBSTR(jumin,1,6)||'-'||SUBSTR(jumin,7) "주민번호"
+FROM student;
+-- 모닝퀴즈 끝 --
 
 
 
