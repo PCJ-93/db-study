@@ -212,3 +212,38 @@ SELECT *
 FROM student;
 
 
+-- 모닝 퀴즈 --
+SELECT
+    deptno "부서번호",
+    --ROUND(AVG(sal),2),
+    TO_CHAR(AVG(sal),'9999.99') "평균급여"
+FROM emp
+GROUP BY deptno
+HAVING AVG(sal) >= 2000;
+
+SELECT
+    p_date 판매일자,
+    SUM(p_qty) 판매수량,
+    SUM(p_total) 판매금액
+FROM panmae
+GROUP BY p_date
+ORDER BY p_date;
+
+SELECT
+    p_date 판매일자,
+    p_code 상품코드,
+    SUM(p_qty) 판매수량,
+    SUM(p_total) 판매금액
+FROM panmae
+GROUP BY ROLLUP( p_date, p_code );
+
+-- 퀴즈 끝 --
+
+
+
+
+
+
+
+
+
