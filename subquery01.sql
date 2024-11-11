@@ -349,6 +349,11 @@ WHERE s.height > (SELECT AVG(t.height)
                     WHERE t.grade = s.grade);
 
 -- 모닝 퀴즈 --
+--emp2 dept2 테이블을 참고하여,
+--
+--'AL Pacino'와 "같은 지역"에서
+--근무하는 직원들의 평균 연봉보다
+--많이 받는 직원들의 사번, 이름, 부서번호, 부서이름, 근무지역, 급여 를 출력하세요.
 SELECT 
     AVG(pay)
 FROM emp2 e, dept2 d
@@ -376,16 +381,3 @@ FROM emp2 e, (SELECT
 WHERE e.pay > t.avg_pay
 AND e.deptno = d.dcode;
 -- 모닝퀴즈 끝 --
-
-
-
-
-
-
-
-
-
-
-
-
-
