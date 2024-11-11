@@ -269,6 +269,8 @@ GROUP BY deptno, dname;
 
 
 -- 간단한 연습 --
+1.student, department 테이블 활용
+학과 이름, 학과별 최대키, 학과별 최대키를 가진 학생들의 이름과 키를 출력 하세요;
 SELECT deptno1, MAX(height)
 FROM student
 GROUP BY deptno1;
@@ -290,19 +292,90 @@ WHERE (deptno1, height) IN ( SELECT deptno1, MAX(height)
                                 GROUP BY deptno1 );
 
 --2) 인라인뷰 (서브쿼리)
-SELECT *
+SELECT t.max_height, s.name, s.height
 FROM(SELECT deptno1, MAX(height) max_height
         FROM student
         GROUP BY deptno1) t, student s
-WHERE ;
+WHERE t.deptno1 = s.deptno1
+AND t.max_height = s.height;
+
+--2-1) join
+SELECT d.dname, t.max_height, s.name, s.height
+FROM(SELECT deptno1, MAX(height) max_height
+        FROM student
+        GROUP BY deptno1) t, student s, department d
+WHERE t.deptno1 = s.deptno1
+AND t.max_height = s.height
+AND t.deptno1 = d.deptno;
+
+--2-2)서브쿼리
+SELECT ( SELECT dname 
+        FROM department 
+        WHERE deptno = t.deptno1 ) dname,
+        t.max_height,
+        s.name,
+        s.height
+FROM(SELECT deptno1, MAX(height) max_height
+        FROM student
+        GROUP BY deptno1) t, student s, department d
+WHERE t.deptno1 = s.deptno1
+AND t.max_height = s.height
+AND t.deptno1 = d.deptno;
 
 
+2.student 테이블에서 학생의 키가 동일 학년의 평균 키 보다 큰 학생들의 학년과 이름과 키,
+해당 학년의 평균 키를 출력 하세요.
+(학년 컬럼으로 오름차순 정렬해서 출력하세요);
+SELECT s.grade, s.name, s.height, t.avg_height
+FROM
+    (SELECT grade, AVG(height) avg_height
+    FROM student
+    GROUP BY grade) t, student s
+WHERE t.grade = s.grade
+AND t.avg_height < s.height
+ORDER BY s.grade;
 
 
+SELECT 
+    s.grade, 
+    s.name, 
+    s.height,
+    (SELECT AVG(t.height)
+    FROM student t
+    WHERE t.grade = s.grade) avg_height
+FROM student s
+WHERE s.height > (SELECT AVG(t.height)
+                    FROM student t
+                    WHERE t.grade = s.grade);
 
+-- 모닝 퀴즈 --
+SELECT 
+    AVG(pay)
+FROM emp2 e, dept2 d
+WHERE e.deptno = d.dcode
+AND area = (SELECT d.area
+            FROM emp2 e, dept2 d
+            WHERE e.name = 'AL Pacino'
+            AND e.deptno = d.dcode);
 
-
-
+SELECT 
+    e.empno,
+    e.name,
+    e.deptno,
+    d.dname,
+    d.area,
+    e.pay
+FROM emp2 e, (SELECT 
+                    AVG(pay) avg_pay
+                FROM emp2 e, dept2 d
+                WHERE e.deptno = d.dcode
+                AND area = (SELECT d.area
+                            FROM emp2 e, dept2 d
+                            WHERE e.name = 'AL Pacino'
+                            AND e.deptno = d.dcode)) t, dept2 d
+WHERE e.pay > t.avg_pay
+AND e.deptno = d.dcode;
+-- 모닝퀴즈 끝 --
 
 
 
