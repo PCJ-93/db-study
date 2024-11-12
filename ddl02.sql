@@ -86,7 +86,7 @@ WHERE
 
 CREATE TABLE T_MENU_12
 (
-    id NUMBER(5) PRIMARY KEY,
+    id NUMBER(5) PRIMARY KEY,  -- primary key = 기본키!!
     name VARCHAR2(128) NOT NULL,
     price NUMBER(10),
     menu_list VARCHAR2(64),
@@ -116,13 +116,6 @@ SELECT *
 FROM T_MENU_12
 WHERE id = 5;
 
-
-
-
-
-
-
-
-
-
+commit;
+-- 모닝퀴즈 끝 --
 

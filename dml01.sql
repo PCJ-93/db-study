@@ -94,6 +94,23 @@ SELECT * -- delete 사용할때 select로 확실히 조건에 맞는지 확인�
 FROM dept4
 WHERE temp_code = 'Y';
 
+SELECT *
+FROM tt02;
+
+INSERT ALL  -----   한번에 여러행 인서트.. 마지막에 셀렉트프롬듀얼 붙여줘야 작동됨..
+INTO tt02 VALUES (7, '이름7', null)
+INTO tt02 VALUES (8, '이름8', null)
+INTO tt02 VALUES (9, '이름9', null)
+INTO tt02 VALUES (10, '이름10', null)
+SELECT * FROM dual;
+
+INSERT INTO tt02  -- number3 varchar2 date
+SELECT 11, '샘플', SYSDATE FROM dual;
+
+INSERT INTO tt02
+SELECT deptno, loc, SYSDATE FROM dept;
+
+
 
 
 
