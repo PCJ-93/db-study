@@ -66,6 +66,55 @@ INSERT INTO tt03
 VALUES (1, '이름1', 50, 'T'); -- pass 'Y' 'N'만 가능
 
 
+-- 모닝퀴즈 --
+CREATE TABLE
+
+INSERT INTO
+VALUES
+
+UPDATE
+SET
+WHERE
+
+DELETE
+FROM
+WHERE
+
+SELECT
+FROM
+WHERE
+
+CREATE TABLE T_MENU_12
+(
+    id NUMBER(5) PRIMARY KEY,
+    name VARCHAR2(128) NOT NULL,
+    price NUMBER(10),
+    menu_list VARCHAR2(64),
+    dv_date DATE
+);
+
+INSERT INTO T_MENU_12
+VALUES (1, '싸이버거', 6000, '완전식품', SYSDATE);
+INSERT INTO T_MENU_12
+VALUES (2, '콩나물비빔밥', 7000, '탄수화물', SYSDATE);
+INSERT INTO T_MENU_12
+VALUES (3, '닭가슴살', 3000, '단백질', SYSDATE);
+INSERT INTO T_MENU_12
+VALUES (4, '베트남쌀국수', 8000, '탄수화물', SYSDATE);
+INSERT INTO T_MENU_12
+VALUES (5, '라면', 2000, '밀가루', SYSDATE);
+
+SELECT *
+FROM T_MENU_12;
+
+UPDATE T_MENU_12
+SET price = 8500
+WHERE id = 4;
+
+SELECT *
+--DELETE
+FROM T_MENU_12
+WHERE id = 5;
 
 
 
