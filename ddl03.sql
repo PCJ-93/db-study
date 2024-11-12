@@ -102,9 +102,14 @@ FROM tt05;
 
 
 -- MERGE 1테이블과 2테이블을 병합해서 새로운테이블을 만든다. // UNION ALL 은 조회만하는거 저장X
-
-
-
+MERGE INTO 테이블명 별칭
+USING 가져올테이블명 별칭
+ON(테이블명 = 가져올테이블명)
+WHEN MATCHED THEN -- 매치하면 가져올테이블에있는거 집어넣음
+UPDATE SET
+WHEN NOT MATCHED THEN -- 매치안하면 새로 생성
+INSERT VALUES
+;
 
 
 
