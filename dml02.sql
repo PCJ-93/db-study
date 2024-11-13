@@ -249,21 +249,62 @@ FROM product_quiz p1, product_quiz2 p2
 WHERE p2.price_group = p1.price_group
 GROUP BY p2.price_group;
 
-SELECT 
-    p2.price_group,
-    ( SELECT count(price)
-        FROM product_quiz
-        GROUP BY price_group )
-FROM product_quiz p1, product_quiz2 p2
-WHERE p2.price_group = p1.price_group
-GROUP BY p2.price_group;
+-- DB쿼리 연습 끝 --
+
+-- 모닝 퀴즈 --
+CREATE TABLE TABLE_DATA_1
+(
+no number(10),
+create_date DATE
+);
+
+CREATE TABLE TABLE_DATA_2
+(
+no number(10),
+create_date DATE
+);
+
+CREATE TABLE TABLE_COLC
+(
+std_date DATE,
+CHECK_DATA1 VARCHAR2(6),
+CHECK_DATA2 VARCHAR2(6)
+);
+
+INSERT INTO TABLE_DATA_1 VALUES (1, '2023-04-01');
+INSERT INTO TABLE_DATA_1 VALUES (2, '2023-04-02');
+INSERT INTO TABLE_DATA_1 VALUES (3, '2023-04-03');
+INSERT INTO TABLE_DATA_1 VALUES (4, '2023-04-04');
+
+INSERT INTO TABLE_DATA_2 VALUES (1, '2023-04-02');
+INSERT INTO TABLE_DATA_2 VALUES (2, '2023-04-03');
+INSERT INTO TABLE_DATA_2 VALUES (3, '2023-04-04');
+INSERT INTO TABLE_DATA_2 VALUES (4, '2023-04-05');
+
+SELECT *
+FROM TABLE_COLC
+ORDER BY std_date;
+
+-- A 업체 기준 머지
+MERGE INTO TABLE_COLC C
+USING TABLE_DATA_1 D
+ON (C.std_date = D.create_date)
+WHEN MATCHED THEN -- 일치하면 업데이트
+    UPDATE SET  C.check_data1 = 'Y'
+WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
+    INSERT VALUES (D.create_date, 'Y', 'N');
+
+-- B 업체 기준
+MERGE INTO TABLE_COLC C
+USING TABLE_DATA_2 D
+ON (C.std_date = D.create_date)
+WHEN MATCHED THEN -- 일치하면 업데이트
+    UPDATE SET  C.check_data2 = 'Y'
+WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
+    INSERT VALUES (D.create_date, 'N', 'Y');
+-- 모닝 퀴즈 끝 --
 
 
-SELECT
-    p2.price_group,
-    count(price)
-FROM product_quiz p1 = product_quiz2 p2
-GROUP BY price_group;
 
 
 
