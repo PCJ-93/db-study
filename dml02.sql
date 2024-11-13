@@ -72,11 +72,11 @@ WHERE TO_CHAR(w_date, 'MM') = 11;
 --하나의가게 + 날짜 중복x
 MERGE INTO comp_m m
 USING SHOE_M s
-ON (m.w_date = s.w_date)
+ON (m.w_date = s.w_date) -- ON 에 들어간 조건은 아래에 업데이트에서 사용 불가 //on에 넣은 조건으로 비교하는데 바꾸겠다고하는거라서 안됨
 WHEN MATCHED THEN  -- 조건이 일치하면
     UPDATE SET m.sales = s.sales
 WHEN NOT MATCHED THEN  -- 조건에 일치하는게 없으면
-    INSERT VALUES (s.w_date, s.s_code, s.sales);
+    INSERT VALUES (s.w_date, s.s_code, s.sales); -- using에있는 테이블 데이터 추가
     
 MERGE INTO comp_m m
 USING CLOT_M s
@@ -231,7 +231,7 @@ ORDER BY std_date;
 -- A 업체 기준 머지
 MERGE INTO TABLE_COLC C
 USING TABLE_DATA_1 D
-ON (C.std_date = D.create_date)
+ON (C.std_date = D.create_date)  -- ON 에 들어간 조건은 아래에 업데이트에서 사용 불가 //on에 넣은 조건으로 비교하는데 바꾸겠다고하는거라서 안됨
 WHEN MATCHED THEN -- 일치하면 업데이트
     UPDATE SET  C.check_data1 = 'Y'
 WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
