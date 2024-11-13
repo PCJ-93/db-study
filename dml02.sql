@@ -193,6 +193,60 @@ SET bonus = 100
 WHERE name = 'Sharon Stone';
 -- 연습 끝 --
 
+
+-- 모닝 퀴즈 --
+CREATE TABLE TABLE_DATA_1
+(
+no number(10),
+create_date DATE
+);
+
+CREATE TABLE TABLE_DATA_2
+(
+no number(10),
+create_date DATE
+);
+
+CREATE TABLE TABLE_COLC
+(
+std_date DATE,
+CHECK_DATA1 VARCHAR2(6),
+CHECK_DATA2 VARCHAR2(6)
+);
+
+INSERT INTO TABLE_DATA_1 VALUES (1, '2023-04-01');
+INSERT INTO TABLE_DATA_1 VALUES (2, '2023-04-02');
+INSERT INTO TABLE_DATA_1 VALUES (3, '2023-04-03');
+INSERT INTO TABLE_DATA_1 VALUES (4, '2023-04-04');
+
+INSERT INTO TABLE_DATA_2 VALUES (1, '2023-04-02');
+INSERT INTO TABLE_DATA_2 VALUES (2, '2023-04-03');
+INSERT INTO TABLE_DATA_2 VALUES (3, '2023-04-04');
+INSERT INTO TABLE_DATA_2 VALUES (4, '2023-04-05');
+
+SELECT *
+FROM TABLE_COLC
+ORDER BY std_date;
+
+-- A 업체 기준 머지
+MERGE INTO TABLE_COLC C
+USING TABLE_DATA_1 D
+ON (C.std_date = D.create_date)
+WHEN MATCHED THEN -- 일치하면 업데이트
+    UPDATE SET  C.check_data1 = 'Y'
+WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
+    INSERT VALUES (D.create_date, 'Y', 'N');
+
+-- B 업체 기준
+MERGE INTO TABLE_COLC C
+USING TABLE_DATA_2 D
+ON (C.std_date = D.create_date)
+WHEN MATCHED THEN -- 일치하면 업데이트
+    UPDATE SET  C.check_data2 = 'Y'
+WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
+    INSERT VALUES (D.create_date, 'N', 'Y');
+-- 모닝 퀴즈 끝 --
+
 -- DB쿼리 연습 from.programmers --
 CREATE TABLE product_quiz
 (
@@ -250,59 +304,78 @@ WHERE p2.price_group = p1.price_group
 GROUP BY p2.price_group;
 
 -- DB쿼리 연습 끝 --
+-- DB쿼리 풀이 --
 
--- 모닝 퀴즈 --
-CREATE TABLE TABLE_DATA_1
-(
-no number(10),
-create_date DATE
-);
+-- 1. 단순 계산먼저 /쉽지만 쿼리 길다(노가다)
+    SELECT 0 price_group, COUNT(*) products
+    FROM product_quiz
+    WHERE price BETWEEN 0 AND 9999
+UNION ALL
+    SELECT 10000, COUNT(*)
+    FROM product_quiz
+    WHERE price BETWEEN 10000 AND 19999
+UNION ALL
+    SELECT 20000, COUNT(*)
+    FROM product_quiz
+    WHERE price BETWEEN 20000 AND 29999
+UNION ALL
+    SELECT 30000, COUNT(*)
+    FROM product_quiz
+    WHERE price BETWEEN 30000 AND 39999;
 
-CREATE TABLE TABLE_DATA_2
-(
-no number(10),
-create_date DATE
-);
+-- 2. GROUP BY 로 잘 묶은 풀이
+만의 자리수를 뽑아내면?
+SELECT * FROM product_quiz;
+10000 1
+9000  0
+22000 2
+15000 1
+30000 3
+17000 1; --얘들끼리 묶으면 1이 몇개 2가몇개 .. 찾을수있다
+SELECT TRUNC(price/10000), price/10000 -- trunc : 소수점 날리기
+FROM product_quiz; --얘들끼리 묶으면 1이 몇개 2가몇개 .. 찾을수있다2
+-- 찾고나서 그룹바이로 풀이
+SELECT TRUNC(price/10000)*10000 price_group,COUNT(*) products
+FROM product_quiz
+GROUP BY TRUNC(price/10000)
+ORDER BY price_group;
 
-CREATE TABLE TABLE_COLC
-(
-std_date DATE,
-CHECK_DATA1 VARCHAR2(6),
-CHECK_DATA2 VARCHAR2(6)
-);
+-- 2-2 CASE문 활용 그룹바이 조회
+SELECT CASE
+            WHEN price BETWEEN 0 AND 9999 THEN 0
+            WHEN price BETWEEN 10000 AND 19999 THEN 10000
+            WHEN price BETWEEN 20000 AND 29999 THEN 20000
+            WHEN price BETWEEN 30000 AND 39999 THEN 30000
+        END price_group, -- 그룹바이에 들어가서 그룹바이형식으로 사용가능
+        COUNT(*) products
+FROM product_quiz
+GROUP BY CASE
+            WHEN price BETWEEN 0 AND 9999 THEN 0
+            WHEN price BETWEEN 10000 AND 19999 THEN 10000
+            WHEN price BETWEEN 20000 AND 29999 THEN 20000
+            WHEN price BETWEEN 30000 AND 39999 THEN 30000
+        END
+ORDER BY price_group;
 
-INSERT INTO TABLE_DATA_1 VALUES (1, '2023-04-01');
-INSERT INTO TABLE_DATA_1 VALUES (2, '2023-04-02');
-INSERT INTO TABLE_DATA_1 VALUES (3, '2023-04-03');
-INSERT INTO TABLE_DATA_1 VALUES (4, '2023-04-04');
+-- 3. group by 인데 subquery 를 곁들인
+SELECT * FROM product_quiz;
 
-INSERT INTO TABLE_DATA_2 VALUES (1, '2023-04-02');
-INSERT INTO TABLE_DATA_2 VALUES (2, '2023-04-03');
-INSERT INTO TABLE_DATA_2 VALUES (3, '2023-04-04');
-INSERT INTO TABLE_DATA_2 VALUES (4, '2023-04-05');
+SELECT price price_group, COUNT(*) products
+FROM ( SELECT product_id,
+            product_code,
+            TRUNC(price/10000) * 10000 price
+        FROM product_quiz )
+GROUP BY price
+ORDER BY price;
 
-SELECT *
-FROM TABLE_COLC
-ORDER BY std_date;
+SELECT price price_group, COUNT(*) products
+FROM ( SELECT 
+            TRUNC(price/10000) * 10000 price
+        FROM product_quiz )
+GROUP BY price
+ORDER BY price;
 
--- A 업체 기준 머지
-MERGE INTO TABLE_COLC C
-USING TABLE_DATA_1 D
-ON (C.std_date = D.create_date)
-WHEN MATCHED THEN -- 일치하면 업데이트
-    UPDATE SET  C.check_data1 = 'Y'
-WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
-    INSERT VALUES (D.create_date, 'Y', 'N');
 
--- B 업체 기준
-MERGE INTO TABLE_COLC C
-USING TABLE_DATA_2 D
-ON (C.std_date = D.create_date)
-WHEN MATCHED THEN -- 일치하면 업데이트
-    UPDATE SET  C.check_data2 = 'Y'
-WHEN NOT MATCHED THEN -- 일치하는게 없으면 추가
-    INSERT VALUES (D.create_date, 'N', 'Y');
--- 모닝 퀴즈 끝 --
 
 
 
